@@ -33,6 +33,8 @@ class MainActivity : AppCompatActivity() {
     private val wrongPins = mutableListOf<String>()
     private var settingsTapCount = 0
     private var lastTapTime = 0L
+    private var actualTime = ""
+    private var showingWrongPin = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +47,7 @@ class MainActivity : AppCompatActivity() {
         setupNumberPad()
         setupSecretArea()
         setupSettingsButton()
+        setupTimeContainer()
         updateTimeAndDate()
     }
 
@@ -154,6 +157,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupTimeContainer() {
+        timeText.setOnLongClickListener {
+            if (wrongPins.isNotEmpty() && !showingWrongPin) {
+                showingWrongPin = true
+                val lastWrongPin = wrongPins.last()
+
+                // Format PIN as time (e.g., "1234" -> "12:34", "6142" -> "61:42")
+                val formattedPin = if (lastWrongPin.length >= 2) {
+                    val hours = lastWrongPin.substring(0, lastWrongPin.length / 2)
+                    val minutes = lastWrongPin.substring(lastWrongPin.length / 2)
+                    "$hours:$minutes"
+                } else {
+                    lastWrongPin
+                }
+
+                timeText.text = formattedPin
+
+                // Restore actual time after 3 seconds
+                android.os.Handler(mainLooper).postDelayed({
+                    timeText.text = actualTime
+                    showingWrongPin = false
+                }, 3000)
+            }
+            true
+        }
+    }
+
     private fun onNumberPressed(number: String) {
         if (currentPin.length < pinLength) {
             currentPin += number
@@ -243,15 +273,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateTimeAndDate() {
-        val calendar = Calendar.getInstance()
+        if (!showingWrongPin) {
+            val calendar = Calendar.getInstance()
 
-        // Update time
-        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-        timeText.text = timeFormat.format(calendar.time)
+            // Update time
+            val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+            actualTime = timeFormat.format(calendar.time)
+            timeText.text = actualTime
 
-        // Update date
-        val dateFormat = SimpleDateFormat("EEEE, d 'de' MMMM", Locale("es", "ES"))
-        dateText.text = dateFormat.format(calendar.time)
+            // Update date
+            val dateFormat = SimpleDateFormat("EEEE, d 'de' MMMM", Locale("es", "ES"))
+            dateText.text = dateFormat.format(calendar.time)
+        }
 
         // Update every minute
         android.os.Handler(mainLooper).postDelayed({
