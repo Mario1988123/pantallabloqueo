@@ -1,6 +1,5 @@
 package com.mario.pantallabloqueo
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -9,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import java.io.File
 import java.io.FileOutputStream
@@ -29,7 +29,17 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var cancelButton: Button
 
     private var selectedImageUri: Uri? = null
-    private val PICK_IMAGE_REQUEST = 1
+
+    private val imagePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK && result.data != null) {
+            selectedImageUri = result.data?.data
+            selectedImageUri?.let {
+                backgroundPreview.setImageURI(it)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,7 +108,7 @@ class SettingsActivity : AppCompatActivity() {
             openImagePicker()
         }
 
-        pinLengthGroup.setOnCheckedChangeListener { _, checkedId ->
+        pinLengthGroup.setOnCheckedChangeListener { _, _ ->
             updatePinInputMaxLength()
             pinInput.text.clear()
             confirmPinInput.text.clear()
@@ -125,17 +135,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun openImagePicker() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, PICK_IMAGE_REQUEST)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            selectedImageUri = data.data
-            selectedImageUri?.let {
-                backgroundPreview.setImageURI(it)
-            }
-        }
+        imagePickerLauncher.launch(intent)
     }
 
     private fun clearWrongPins() {
@@ -219,6 +219,7 @@ class SettingsActivity : AppCompatActivity() {
         finish()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         goBackToLockScreen()
     }

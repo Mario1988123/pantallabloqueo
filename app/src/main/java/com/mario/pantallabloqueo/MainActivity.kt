@@ -265,8 +265,9 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         // Prevent back button from closing the app
-        // Do nothing
+        // Do nothing - intentionally not calling super
     }
 }
