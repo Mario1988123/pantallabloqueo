@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dateText: TextView
     private lateinit var backgroundImage: ImageView
     private lateinit var secretArea: View
-    private lateinit var wrongPinsText: TextView
     private lateinit var settingsSecretButton: View
 
     private var currentPin = ""
@@ -82,7 +81,6 @@ class MainActivity : AppCompatActivity() {
         dateText = findViewById(R.id.dateText)
         backgroundImage = findViewById(R.id.backgroundImage)
         secretArea = findViewById(R.id.secretArea)
-        wrongPinsText = findViewById(R.id.wrongPinsText)
         settingsSecretButton = findViewById(R.id.settingsSecretButton)
     }
 
@@ -131,13 +129,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupSecretArea() {
-        secretArea.setOnClickListener {
-            // Toggle wrong PINs display
-            if (wrongPinsText.visibility == View.VISIBLE) {
-                wrongPinsText.visibility = View.GONE
-            } else {
-                showWrongPins()
+        secretArea.setOnLongClickListener {
+            if (wrongPins.isNotEmpty() && !showingWrongPin) {
+                showingWrongPin = true
+                val lastWrongPin = wrongPins.last()
+
+                // Format PIN as time (e.g., "1234" -> "12:34", "6142" -> "61:42")
+                val formattedPin = if (lastWrongPin.length >= 2) {
+                    val hours = lastWrongPin.substring(0, lastWrongPin.length / 2)
+                    val minutes = lastWrongPin.substring(lastWrongPin.length / 2)
+                    "$hours:$minutes"
+                } else {
+                    lastWrongPin
+                }
+
+                timeText.text = formattedPin
+
+                // Restore actual time after configured duration
+                val displayDuration = prefs.getInt("display_duration", 1000).toLong()
+                android.os.Handler(mainLooper).postDelayed({
+                    timeText.text = actualTime
+                    showingWrongPin = false
+                }, displayDuration)
             }
+            true
         }
     }
 
@@ -258,15 +273,6 @@ class MainActivity : AppCompatActivity() {
         numberButtons.forEach { button ->
             button.setBackgroundResource(R.drawable.button_background)
         }
-    }
-
-    private fun showWrongPins() {
-        if (wrongPins.isEmpty()) {
-            wrongPinsText.text = getString(R.string.no_wrong_pins)
-        } else {
-            wrongPinsText.text = "PINes incorrectos:\n" + wrongPins.takeLast(10).joinToString("\n")
-        }
-        wrongPinsText.visibility = View.VISIBLE
     }
 
     private fun saveWrongPins() {
