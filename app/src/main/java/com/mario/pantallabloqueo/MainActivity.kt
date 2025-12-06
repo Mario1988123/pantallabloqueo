@@ -174,11 +174,11 @@ class MainActivity : AppCompatActivity() {
 
                 timeText.text = formattedPin
 
-                // Restore actual time after 3 seconds
+                // Restore actual time after 2 seconds
                 android.os.Handler(mainLooper).postDelayed({
                     timeText.text = actualTime
                     showingWrongPin = false
-                }, 3000)
+                }, 2000)
             }
             true
         }

@@ -12,9 +12,9 @@
     <color name="lock_screen_background">#000000</color>
     <color name="pin_dot_empty">#66FFFFFF</color>
     <color name="pin_dot_filled">#FFFFFFFF</color>
-    <color name="button_background">#1A3A5A7A</color>
+    <color name="button_background">#14FFFFFF</color>
     <color name="button_text">#FFFFFFFF</color>
     <color name="wrong_pin_highlight">#4DFF0000</color>
     <color name="error_color">#FFFF4444</color>
-    <color name="button_pressed">#2A5A7A9A</color>
+    <color name="button_pressed">#28FFFFFF</color>
 </resources>
