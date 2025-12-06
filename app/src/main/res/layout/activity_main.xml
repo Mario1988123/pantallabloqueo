@@ -184,7 +184,7 @@
 
         <!-- Row 4 -->
         <Space
-            android:layout_width="0dp"
+            android:layout_width="72dp"
             android:layout_height="72dp"
             android:layout_margin="8dp" />
 
