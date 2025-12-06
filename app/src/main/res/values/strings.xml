@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pantalla Bloqueo</string>
+    <string name="enter_pin">Introduce el PIN</string>
+    <string name="wrong_pin">PIN incorrecto</string>
+    <string name="pin_cleared">PIN borrado</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Configuración</string>
+    <string name="pin_length">Longitud del PIN</string>
+    <string name="pin_4_digits">4 dígitos</string>
+    <string name="pin_6_digits">6 dígitos</string>
+    <string name="set_pin">Configurar PIN</string>
+    <string name="confirm_pin">Confirmar PIN</string>
+    <string name="change_background">Cambiar fondo</string>
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="pin_saved">PIN guardado correctamente</string>
+    <string name="pins_dont_match">Los PINes no coinciden</string>
+    <string name="select_image">Seleccionar imagen</string>
+
+    <!-- Wrong PINs -->
+    <string name="wrong_pins_title">PINes incorrectos</string>
+    <string name="no_wrong_pins">No hay PINes incorrectos</string>
+    <string name="clear_wrong_pins">Limpiar historial</string>
+</resources>
