@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lock_screen_background">
+    android:background="@color/lock_screen_background"
+    android:fitsSystemWindows="false">
 
     <!-- Background Image -->
     <ImageView
@@ -18,7 +18,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#60000000" />
+        android:background="#70000000" />
 
     <!-- Time and Date (decorative) -->
     <LinearLayout
@@ -26,10 +26,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="140dp"
+        android:layout_marginTop="80dp"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingTop="30dp">
+        android:paddingTop="20dp">
 
         <TextView
             android:id="@+id/timeText"
@@ -45,9 +45,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Viernes, 6 de diciembre"
+            android:text="sábado, 6 de diciembre"
             android:textColor="@color/white"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
     </LinearLayout>
 
     <!-- PIN Input Container -->
@@ -69,45 +69,45 @@
 
             <View
                 android:id="@+id/pinDot1"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_margin="8dp"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_margin="10dp"
                 android:background="@drawable/pin_dot_empty" />
 
             <View
                 android:id="@+id/pinDot2"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_margin="8dp"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_margin="10dp"
                 android:background="@drawable/pin_dot_empty" />
 
             <View
                 android:id="@+id/pinDot3"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_margin="8dp"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_margin="10dp"
                 android:background="@drawable/pin_dot_empty" />
 
             <View
                 android:id="@+id/pinDot4"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_margin="8dp"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_margin="10dp"
                 android:background="@drawable/pin_dot_empty" />
 
             <View
                 android:id="@+id/pinDot5"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_margin="8dp"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_margin="10dp"
                 android:background="@drawable/pin_dot_empty"
                 android:visibility="gone" />
 
             <View
                 android:id="@+id/pinDot6"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_margin="8dp"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_margin="10dp"
                 android:background="@drawable/pin_dot_empty"
                 android:visibility="gone" />
         </LinearLayout>
@@ -131,73 +131,269 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="50dp"
         android:columnCount="3"
         android:rowCount="4">
 
         <!-- Row 1 -->
-        <Button
-            android:id="@+id/btn1"
-            style="@style/PinButton"
-            android:text="1" />
+        <FrameLayout
+            android:id="@+id/btn1Container"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="12dp"
+            android:background="@drawable/button_background"
+            android:clickable="true"
+            android:focusable="true">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="1"
+                android:textColor="@color/white"
+                android:textSize="28sp" />
+        </FrameLayout>
 
-        <Button
-            android:id="@+id/btn2"
-            style="@style/PinButton"
-            android:text="2\nABC"
-            android:lineSpacingExtra="-8dp"
-            android:includeFontPadding="false" />
+        <FrameLayout
+            android:id="@+id/btn2Container"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="12dp"
+            android:background="@drawable/button_background"
+            android:clickable="true"
+            android:focusable="true">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2"
+                    android:textColor="@color/white"
+                    android:textSize="28sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ABC"
+                    android:textColor="#99FFFFFF"
+                    android:textSize="9sp"
+                    android:layout_marginTop="-4dp" />
+            </LinearLayout>
+        </FrameLayout>
 
-        <Button
-            android:id="@+id/btn3"
-            style="@style/PinButton"
-            android:text="3\nDEF"
-            android:lineSpacingExtra="-8dp"
-            android:includeFontPadding="false" />
+        <FrameLayout
+            android:id="@+id/btn3Container"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="12dp"
+            android:background="@drawable/button_background"
+            android:clickable="true"
+            android:focusable="true">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3"
+                    android:textColor="@color/white"
+                    android:textSize="28sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DEF"
+                    android:textColor="#99FFFFFF"
+                    android:textSize="9sp"
+                    android:layout_marginTop="-4dp" />
+            </LinearLayout>
+        </FrameLayout>
 
         <!-- Row 2 -->
-        <Button
-            android:id="@+id/btn4"
-            style="@style/PinButton"
-            android:text="4\nGHI"
-            android:lineSpacingExtra="-8dp"
-            android:includeFontPadding="false" />
+        <FrameLayout
+            android:id="@+id/btn4Container"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="12dp"
+            android:background="@drawable/button_background"
+            android:clickable="true"
+            android:focusable="true">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4"
+                    android:textColor="@color/white"
+                    android:textSize="28sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="GHI"
+                    android:textColor="#99FFFFFF"
+                    android:textSize="9sp"
+                    android:layout_marginTop="-4dp" />
+            </LinearLayout>
+        </FrameLayout>
 
-        <Button
-            android:id="@+id/btn5"
-            style="@style/PinButton"
-            android:text="5\nJKL"
-            android:lineSpacingExtra="-8dp"
-            android:includeFontPadding="false" />
+        <FrameLayout
+            android:id="@+id/btn5Container"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="12dp"
+            android:background="@drawable/button_background"
+            android:clickable="true"
+            android:focusable="true">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5"
+                    android:textColor="@color/white"
+                    android:textSize="28sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="JKL"
+                    android:textColor="#99FFFFFF"
+                    android:textSize="9sp"
+                    android:layout_marginTop="-4dp" />
+            </LinearLayout>
+        </FrameLayout>
 
-        <Button
-            android:id="@+id/btn6"
-            style="@style/PinButton"
-            android:text="6\nMNO"
-            android:lineSpacingExtra="-8dp"
-            android:includeFontPadding="false" />
+        <FrameLayout
+            android:id="@+id/btn6Container"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="12dp"
+            android:background="@drawable/button_background"
+            android:clickable="true"
+            android:focusable="true">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="6"
+                    android:textColor="@color/white"
+                    android:textSize="28sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="MNO"
+                    android:textColor="#99FFFFFF"
+                    android:textSize="9sp"
+                    android:layout_marginTop="-4dp" />
+            </LinearLayout>
+        </FrameLayout>
 
         <!-- Row 3 -->
-        <Button
-            android:id="@+id/btn7"
-            style="@style/PinButton"
-            android:text="7\nPQRS"
-            android:lineSpacingExtra="-8dp"
-            android:includeFontPadding="false" />
+        <FrameLayout
+            android:id="@+id/btn7Container"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="12dp"
+            android:background="@drawable/button_background"
+            android:clickable="true"
+            android:focusable="true">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="7"
+                    android:textColor="@color/white"
+                    android:textSize="28sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PQRS"
+                    android:textColor="#99FFFFFF"
+                    android:textSize="9sp"
+                    android:layout_marginTop="-4dp" />
+            </LinearLayout>
+        </FrameLayout>
 
-        <Button
-            android:id="@+id/btn8"
-            style="@style/PinButton"
-            android:text="8\nTUV"
-            android:lineSpacingExtra="-8dp"
-            android:includeFontPadding="false" />
+        <FrameLayout
+            android:id="@+id/btn8Container"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="12dp"
+            android:background="@drawable/button_background"
+            android:clickable="true"
+            android:focusable="true">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="8"
+                    android:textColor="@color/white"
+                    android:textSize="28sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TUV"
+                    android:textColor="#99FFFFFF"
+                    android:textSize="9sp"
+                    android:layout_marginTop="-4dp" />
+            </LinearLayout>
+        </FrameLayout>
 
-        <Button
-            android:id="@+id/btn9"
-            style="@style/PinButton"
-            android:text="9\nWXYZ"
-            android:lineSpacingExtra="-8dp"
-            android:includeFontPadding="false" />
+        <FrameLayout
+            android:id="@+id/btn9Container"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="12dp"
+            android:background="@drawable/button_background"
+            android:clickable="true"
+            android:focusable="true">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="9"
+                    android:textColor="@color/white"
+                    android:textSize="28sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="WXYZ"
+                    android:textColor="#99FFFFFF"
+                    android:textSize="9sp"
+                    android:layout_marginTop="-4dp" />
+            </LinearLayout>
+        </FrameLayout>
 
         <!-- Row 4 -->
         <Space
@@ -205,17 +401,52 @@
             android:layout_height="70dp"
             android:layout_margin="12dp" />
 
-        <Button
-            android:id="@+id/btn0"
-            style="@style/PinButton"
-            android:text="0\n+"
-            android:lineSpacingExtra="-8dp"
-            android:includeFontPadding="false" />
+        <FrameLayout
+            android:id="@+id/btn0Container"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="12dp"
+            android:background="@drawable/button_background"
+            android:clickable="true"
+            android:focusable="true">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="@color/white"
+                    android:textSize="28sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+"
+                    android:textColor="#99FFFFFF"
+                    android:textSize="9sp"
+                    android:layout_marginTop="-4dp" />
+            </LinearLayout>
+        </FrameLayout>
 
-        <Button
-            android:id="@+id/btnDelete"
-            style="@style/PinButton"
-            android:text="⌫" />
+        <FrameLayout
+            android:id="@+id/btnDeleteContainer"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="12dp"
+            android:background="@drawable/button_background"
+            android:clickable="true"
+            android:focusable="true">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="⌫"
+                android:textColor="@color/white"
+                android:textSize="24sp" />
+        </FrameLayout>
     </GridLayout>
 
     <!-- Secret area for showing wrong PINs (bottom left corner) -->

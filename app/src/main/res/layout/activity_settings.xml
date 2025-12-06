@@ -166,6 +166,45 @@
                 android:textColor="@color/white" />
         </RadioGroup>
 
+        <!-- Hand Preference -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hand_preference_title"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp" />
+
+        <RadioGroup
+            android:id="@+id/handPreferenceGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="24dp">
+
+            <RadioButton
+                android:id="@+id/handLeft"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hand_left"
+                android:textColor="@color/white"
+                android:checked="true" />
+
+            <RadioButton
+                android:id="@+id/handRight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hand_right"
+                android:textColor="@color/white" />
+
+            <RadioButton
+                android:id="@+id/handClock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hand_clock"
+                android:textColor="@color/white" />
+        </RadioGroup>
+
         <!-- Wrong PINs History -->
         <TextView
             android:layout_width="match_parent"

@@ -30,4 +30,10 @@
     <string name="duration_1_sec">1 segundo</string>
     <string name="duration_2_sec">2 segundos</string>
     <string name="duration_3_sec">3 segundos</string>
+
+    <!-- Hand Preference -->
+    <string name="hand_preference_title">Mostrar PIN manteniendo pulsado en:</string>
+    <string name="hand_left">Esquina inferior izquierda (Diestro)</string>
+    <string name="hand_right">Esquina inferior derecha (Zurdo)</string>
+    <string name="hand_clock">Reloj (centro)</string>
 </resources>

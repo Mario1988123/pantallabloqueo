@@ -17,8 +17,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var prefs: SharedPreferences
     private lateinit var pinDots: List<View>
-    private lateinit var numberButtons: List<Button>
-    private lateinit var btnDelete: Button
+    private lateinit var numberButtons: List<View>
+    private lateinit var btnDelete: View
     private lateinit var errorText: TextView
     private lateinit var timeText: TextView
     private lateinit var dateText: TextView
@@ -64,19 +64,19 @@ class MainActivity : AppCompatActivity() {
 
         // Number buttons
         numberButtons = listOf(
-            findViewById(R.id.btn0),
-            findViewById(R.id.btn1),
-            findViewById(R.id.btn2),
-            findViewById(R.id.btn3),
-            findViewById(R.id.btn4),
-            findViewById(R.id.btn5),
-            findViewById(R.id.btn6),
-            findViewById(R.id.btn7),
-            findViewById(R.id.btn8),
-            findViewById(R.id.btn9)
+            findViewById(R.id.btn0Container),
+            findViewById(R.id.btn1Container),
+            findViewById(R.id.btn2Container),
+            findViewById(R.id.btn3Container),
+            findViewById(R.id.btn4Container),
+            findViewById(R.id.btn5Container),
+            findViewById(R.id.btn6Container),
+            findViewById(R.id.btn7Container),
+            findViewById(R.id.btn8Container),
+            findViewById(R.id.btn9Container)
         )
 
-        btnDelete = findViewById(R.id.btnDelete)
+        btnDelete = findViewById(R.id.btnDeleteContainer)
         errorText = findViewById(R.id.errorText)
         timeText = findViewById(R.id.timeText)
         dateText = findViewById(R.id.dateText)
