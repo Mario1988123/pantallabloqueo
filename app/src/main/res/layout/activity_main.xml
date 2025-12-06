@@ -18,7 +18,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#AA000000" />
+        android:background="#60000000" />
 
     <!-- Time and Date (decorative) -->
     <LinearLayout
@@ -201,9 +201,9 @@
 
         <!-- Row 4 -->
         <Space
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:layout_margin="6dp" />
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="12dp" />
 
         <Button
             android:id="@+id/btn0"

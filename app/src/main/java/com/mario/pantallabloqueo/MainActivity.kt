@@ -174,11 +174,12 @@ class MainActivity : AppCompatActivity() {
 
                 timeText.text = formattedPin
 
-                // Restore actual time after 2 seconds
+                // Restore actual time after configured duration
+                val displayDuration = prefs.getInt("display_duration", 1000).toLong()
                 android.os.Handler(mainLooper).postDelayed({
                     timeText.text = actualTime
                     showingWrongPin = false
-                }, 2000)
+                }, displayDuration)
             }
             true
         }

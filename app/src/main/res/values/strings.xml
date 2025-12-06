@@ -23,4 +23,11 @@
     <string name="wrong_pins_title">PINes incorrectos</string>
     <string name="no_wrong_pins">No hay PINes incorrectos</string>
     <string name="clear_wrong_pins">Limpiar historial</string>
+
+    <!-- Display Duration -->
+    <string name="display_duration_title">Duración visualización PIN</string>
+    <string name="duration_half_sec">0.5 segundos</string>
+    <string name="duration_1_sec">1 segundo</string>
+    <string name="duration_2_sec">2 segundos</string>
+    <string name="duration_3_sec">3 segundos</string>
 </resources>
