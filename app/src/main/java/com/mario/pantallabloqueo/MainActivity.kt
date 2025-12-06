@@ -1,10 +1,12 @@
 package com.mario.pantallabloqueo
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -34,6 +36,8 @@ class MainActivity : AppCompatActivity() {
     private var lastTapTime = 0L
     private var actualTime = ""
     private var showingWrongPin = false
+    private val handler = android.os.Handler(android.os.Looper.getMainLooper())
+    private var restoreTimeRunnable: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -128,31 +132,62 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setupSecretArea() {
-        secretArea.setOnLongClickListener {
-            if (wrongPins.isNotEmpty() && !showingWrongPin) {
-                showingWrongPin = true
-                val lastWrongPin = wrongPins.last()
+        var longPressStartTime = 0L
 
-                // Format PIN as time (e.g., "1234" -> "12:34", "6142" -> "61:42")
-                val formattedPin = if (lastWrongPin.length >= 2) {
-                    val hours = lastWrongPin.substring(0, lastWrongPin.length / 2)
-                    val minutes = lastWrongPin.substring(lastWrongPin.length / 2)
-                    "$hours:$minutes"
-                } else {
-                    lastWrongPin
+        secretArea.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    longPressStartTime = System.currentTimeMillis()
+
+                    // Schedule showing the wrong PIN after long press delay
+                    handler.postDelayed({
+                        if (wrongPins.isNotEmpty() && !showingWrongPin) {
+                            showingWrongPin = true
+                            val lastWrongPin = wrongPins.last()
+
+                            // Format PIN as time (e.g., "1234" -> "12:34", "6142" -> "61:42")
+                            val formattedPin = if (lastWrongPin.length >= 2) {
+                                val hours = lastWrongPin.substring(0, lastWrongPin.length / 2)
+                                val minutes = lastWrongPin.substring(lastWrongPin.length / 2)
+                                "$hours:$minutes"
+                            } else {
+                                lastWrongPin
+                            }
+
+                            timeText.text = formattedPin
+
+                            // Restore actual time after configured duration (if not unlimited)
+                            val displayDuration = prefs.getInt("display_duration", 1000)
+                            if (displayDuration > 0) {
+                                restoreTimeRunnable = Runnable {
+                                    timeText.text = actualTime
+                                    showingWrongPin = false
+                                }
+                                handler.postDelayed(restoreTimeRunnable!!, displayDuration.toLong())
+                            }
+                        }
+                    }, 500) // Long press delay
+                    true
                 }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    // Cancel long press if released too quickly
+                    if (System.currentTimeMillis() - longPressStartTime < 500) {
+                        handler.removeCallbacksAndMessages(null)
+                    }
 
-                timeText.text = formattedPin
-
-                // Restore actual time after configured duration
-                val displayDuration = prefs.getInt("display_duration", 1000).toLong()
-                android.os.Handler(mainLooper).postDelayed({
-                    timeText.text = actualTime
-                    showingWrongPin = false
-                }, displayDuration)
+                    // If unlimited duration mode and showing wrong PIN, restore time on release
+                    val displayDuration = prefs.getInt("display_duration", 1000)
+                    if (displayDuration == -1 && showingWrongPin) {
+                        restoreTimeRunnable?.let { handler.removeCallbacks(it) }
+                        timeText.text = actualTime
+                        showingWrongPin = false
+                    }
+                    true
+                }
+                else -> false
             }
-            true
         }
     }
 
@@ -172,31 +207,62 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setupTimeContainer() {
-        timeText.setOnLongClickListener {
-            if (wrongPins.isNotEmpty() && !showingWrongPin) {
-                showingWrongPin = true
-                val lastWrongPin = wrongPins.last()
+        var longPressStartTime = 0L
 
-                // Format PIN as time (e.g., "1234" -> "12:34", "6142" -> "61:42")
-                val formattedPin = if (lastWrongPin.length >= 2) {
-                    val hours = lastWrongPin.substring(0, lastWrongPin.length / 2)
-                    val minutes = lastWrongPin.substring(lastWrongPin.length / 2)
-                    "$hours:$minutes"
-                } else {
-                    lastWrongPin
+        timeText.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    longPressStartTime = System.currentTimeMillis()
+
+                    // Schedule showing the wrong PIN after long press delay
+                    handler.postDelayed({
+                        if (wrongPins.isNotEmpty() && !showingWrongPin) {
+                            showingWrongPin = true
+                            val lastWrongPin = wrongPins.last()
+
+                            // Format PIN as time (e.g., "1234" -> "12:34", "6142" -> "61:42")
+                            val formattedPin = if (lastWrongPin.length >= 2) {
+                                val hours = lastWrongPin.substring(0, lastWrongPin.length / 2)
+                                val minutes = lastWrongPin.substring(lastWrongPin.length / 2)
+                                "$hours:$minutes"
+                            } else {
+                                lastWrongPin
+                            }
+
+                            timeText.text = formattedPin
+
+                            // Restore actual time after configured duration (if not unlimited)
+                            val displayDuration = prefs.getInt("display_duration", 1000)
+                            if (displayDuration > 0) {
+                                restoreTimeRunnable = Runnable {
+                                    timeText.text = actualTime
+                                    showingWrongPin = false
+                                }
+                                handler.postDelayed(restoreTimeRunnable!!, displayDuration.toLong())
+                            }
+                        }
+                    }, 500) // Long press delay
+                    true
                 }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    // Cancel long press if released too quickly
+                    if (System.currentTimeMillis() - longPressStartTime < 500) {
+                        handler.removeCallbacksAndMessages(null)
+                    }
 
-                timeText.text = formattedPin
-
-                // Restore actual time after configured duration
-                val displayDuration = prefs.getInt("display_duration", 1000).toLong()
-                android.os.Handler(mainLooper).postDelayed({
-                    timeText.text = actualTime
-                    showingWrongPin = false
-                }, displayDuration)
+                    // If unlimited duration mode and showing wrong PIN, restore time on release
+                    val displayDuration = prefs.getInt("display_duration", 1000)
+                    if (displayDuration == -1 && showingWrongPin) {
+                        restoreTimeRunnable?.let { handler.removeCallbacks(it) }
+                        timeText.text = actualTime
+                        showingWrongPin = false
+                    }
+                    true
+                }
+                else -> false
             }
-            true
         }
     }
 
@@ -217,7 +283,6 @@ class MainActivity : AppCompatActivity() {
             currentPin = currentPin.dropLast(1)
             updatePinDots()
             errorText.visibility = View.GONE
-            resetButtonHighlights()
         }
     }
 
@@ -251,14 +316,10 @@ class MainActivity : AppCompatActivity() {
         // Show error
         errorText.visibility = View.VISIBLE
 
-        // Highlight wrong buttons
-        highlightWrongButtons()
-
         // Clear PIN after a delay
         currentPin = ""
         android.os.Handler(mainLooper).postDelayed({
             updatePinDots()
-            resetButtonHighlights()
         }, 1500)
     }
 

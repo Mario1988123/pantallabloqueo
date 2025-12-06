@@ -28,6 +28,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var duration1: RadioButton
     private lateinit var duration2: RadioButton
     private lateinit var duration3: RadioButton
+    private lateinit var durationUnlimited: RadioButton
     private lateinit var wrongPinsHistory: TextView
     private lateinit var clearWrongPinsButton: Button
     private lateinit var saveButton: Button
@@ -70,6 +71,7 @@ class SettingsActivity : AppCompatActivity() {
         duration1 = findViewById(R.id.duration1)
         duration2 = findViewById(R.id.duration2)
         duration3 = findViewById(R.id.duration3)
+        durationUnlimited = findViewById(R.id.durationUnlimited)
         wrongPinsHistory = findViewById(R.id.wrongPinsHistory)
         clearWrongPinsButton = findViewById(R.id.clearWrongPinsButton)
         saveButton = findViewById(R.id.saveButton)
@@ -95,6 +97,7 @@ class SettingsActivity : AppCompatActivity() {
             1000 -> duration1.isChecked = true
             2000 -> duration2.isChecked = true
             3000 -> duration3.isChecked = true
+            -1 -> durationUnlimited.isChecked = true
             else -> duration1.isChecked = true
         }
 
@@ -203,6 +206,7 @@ class SettingsActivity : AppCompatActivity() {
             duration1.isChecked -> 1000
             duration2.isChecked -> 2000
             duration3.isChecked -> 3000
+            durationUnlimited.isChecked -> -1
             else -> 1000
         }
         editor.putInt("display_duration", displayDuration)

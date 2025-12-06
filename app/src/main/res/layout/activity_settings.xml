@@ -164,6 +164,13 @@
                 android:layout_height="wrap_content"
                 android:text="@string/duration_3_sec"
                 android:textColor="@color/white" />
+
+            <RadioButton
+                android:id="@+id/durationUnlimited"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/duration_unlimited"
+                android:textColor="@color/white" />
         </RadioGroup>
 
         <!-- Hand Preference -->
