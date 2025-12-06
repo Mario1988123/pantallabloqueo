@@ -18,8 +18,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.PantallaBloqueo.NoActionBar"
-            android:layoutInDisplayCutoutMode="shortEdges">
+            android:theme="@style/Theme.PantallaBloqueo.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
