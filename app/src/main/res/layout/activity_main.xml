@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lock_screen_background">
+
+    <!-- Background Image -->
+    <ImageView
+        android:id="@+id/backgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:contentDescription="Fondo de pantalla" />
+
+    <!-- Overlay for better visibility -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#AA000000" />
+
+    <!-- Time and Date (decorative) -->
+    <LinearLayout
+        android:id="@+id/timeContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="60dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/timeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12:00"
+            android:textColor="@color/white"
+            android:textSize="72sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/dateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Viernes, 6 de diciembre"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <!-- PIN Input Container -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <!-- PIN Dots Container -->
+        <LinearLayout
+            android:id="@+id/pinDotsContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <View
+                android:id="@+id/pinDot1"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/pin_dot_empty" />
+
+            <View
+                android:id="@+id/pinDot2"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/pin_dot_empty" />
+
+            <View
+                android:id="@+id/pinDot3"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/pin_dot_empty" />
+
+            <View
+                android:id="@+id/pinDot4"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/pin_dot_empty" />
+
+            <View
+                android:id="@+id/pinDot5"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/pin_dot_empty"
+                android:visibility="gone" />
+
+            <View
+                android:id="@+id/pinDot6"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/pin_dot_empty"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- Error Message -->
+        <TextView
+            android:id="@+id/errorText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@string/wrong_pin"
+            android:textColor="@color/error_color"
+            android:textSize="14sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- Number Pad -->
+    <GridLayout
+        android:id="@+id/numberPad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp"
+        android:columnCount="3"
+        android:rowCount="4">
+
+        <!-- Row 1 -->
+        <Button
+            android:id="@+id/btn1"
+            style="@style/PinButton"
+            android:text="1" />
+
+        <Button
+            android:id="@+id/btn2"
+            style="@style/PinButton"
+            android:text="2" />
+
+        <Button
+            android:id="@+id/btn3"
+            style="@style/PinButton"
+            android:text="3" />
+
+        <!-- Row 2 -->
+        <Button
+            android:id="@+id/btn4"
+            style="@style/PinButton"
+            android:text="4" />
+
+        <Button
+            android:id="@+id/btn5"
+            style="@style/PinButton"
+            android:text="5" />
+
+        <Button
+            android:id="@+id/btn6"
+            style="@style/PinButton"
+            android:text="6" />
+
+        <!-- Row 3 -->
+        <Button
+            android:id="@+id/btn7"
+            style="@style/PinButton"
+            android:text="7" />
+
+        <Button
+            android:id="@+id/btn8"
+            style="@style/PinButton"
+            android:text="8" />
+
+        <Button
+            android:id="@+id/btn9"
+            style="@style/PinButton"
+            android:text="9" />
+
+        <!-- Row 4 -->
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="72dp"
+            android:layout_margin="8dp" />
+
+        <Button
+            android:id="@+id/btn0"
+            style="@style/PinButton"
+            android:text="0" />
+
+        <Button
+            android:id="@+id/btnDelete"
+            style="@style/PinButton"
+            android:text="⌫" />
+    </GridLayout>
+
+    <!-- Secret area for showing wrong PINs (bottom left corner) -->
+    <View
+        android:id="@+id/secretArea"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/transparent" />
+
+    <!-- Wrong PINs display (hidden by default) -->
+    <TextView
+        android:id="@+id/wrongPinsText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:background="#CC000000"
+        android:padding="8dp"
+        android:text=""
+        android:textColor="@color/error_color"
+        android:textSize="10sp"
+        android:visibility="gone" />
+
+    <!-- Secret settings button (top right corner - 5 tap gesture) -->
+    <View
+        android:id="@+id/settingsSecretButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:background="@android:color/transparent" />
+
+</RelativeLayout>
