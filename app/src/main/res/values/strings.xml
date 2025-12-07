@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Pantalla Bloqueo</string>
+    <string name="app_name">PIN_lock</string>
     <string name="enter_pin">Introduce el PIN</string>
     <string name="wrong_pin">PIN incorrecto</string>
     <string name="pin_cleared">PIN borrado</string>
