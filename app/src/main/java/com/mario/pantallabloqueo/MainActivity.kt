@@ -1,10 +1,12 @@
 package com.mario.pantallabloqueo
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -17,14 +19,13 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var prefs: SharedPreferences
     private lateinit var pinDots: List<View>
-    private lateinit var numberButtons: List<Button>
-    private lateinit var btnDelete: Button
+    private lateinit var numberButtons: List<View>
+    private lateinit var btnDelete: View
     private lateinit var errorText: TextView
     private lateinit var timeText: TextView
     private lateinit var dateText: TextView
     private lateinit var backgroundImage: ImageView
     private lateinit var secretArea: View
-    private lateinit var wrongPinsText: TextView
     private lateinit var settingsSecretButton: View
 
     private var currentPin = ""
@@ -33,9 +34,17 @@ class MainActivity : AppCompatActivity() {
     private val wrongPins = mutableListOf<String>()
     private var settingsTapCount = 0
     private var lastTapTime = 0L
+    private var actualTime = ""
+    private var showingWrongPin = false
+    private val handler = android.os.Handler(android.os.Looper.getMainLooper())
+    private var restoreTimeRunnable: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Enable immersive mode: hide navigation bar and extend to status bar
+        enableImmersiveMode()
+
         setContentView(R.layout.activity_main)
 
         prefs = getSharedPreferences("LockScreenPrefs", Context.MODE_PRIVATE)
@@ -45,6 +54,7 @@ class MainActivity : AppCompatActivity() {
         setupNumberPad()
         setupSecretArea()
         setupSettingsButton()
+        setupTimeContainer()
         updateTimeAndDate()
     }
 
@@ -61,25 +71,24 @@ class MainActivity : AppCompatActivity() {
 
         // Number buttons
         numberButtons = listOf(
-            findViewById(R.id.btn0),
-            findViewById(R.id.btn1),
-            findViewById(R.id.btn2),
-            findViewById(R.id.btn3),
-            findViewById(R.id.btn4),
-            findViewById(R.id.btn5),
-            findViewById(R.id.btn6),
-            findViewById(R.id.btn7),
-            findViewById(R.id.btn8),
-            findViewById(R.id.btn9)
+            findViewById(R.id.btn0Container),
+            findViewById(R.id.btn1Container),
+            findViewById(R.id.btn2Container),
+            findViewById(R.id.btn3Container),
+            findViewById(R.id.btn4Container),
+            findViewById(R.id.btn5Container),
+            findViewById(R.id.btn6Container),
+            findViewById(R.id.btn7Container),
+            findViewById(R.id.btn8Container),
+            findViewById(R.id.btn9Container)
         )
 
-        btnDelete = findViewById(R.id.btnDelete)
+        btnDelete = findViewById(R.id.btnDeleteContainer)
         errorText = findViewById(R.id.errorText)
         timeText = findViewById(R.id.timeText)
         dateText = findViewById(R.id.dateText)
         backgroundImage = findViewById(R.id.backgroundImage)
         secretArea = findViewById(R.id.secretArea)
-        wrongPinsText = findViewById(R.id.wrongPinsText)
         settingsSecretButton = findViewById(R.id.settingsSecretButton)
     }
 
@@ -127,13 +136,61 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setupSecretArea() {
-        secretArea.setOnClickListener {
-            // Toggle wrong PINs display
-            if (wrongPinsText.visibility == View.VISIBLE) {
-                wrongPinsText.visibility = View.GONE
-            } else {
-                showWrongPins()
+        var longPressStartTime = 0L
+
+        secretArea.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    longPressStartTime = System.currentTimeMillis()
+
+                    // Schedule showing the wrong PIN after long press delay
+                    handler.postDelayed({
+                        if (wrongPins.isNotEmpty() && !showingWrongPin) {
+                            showingWrongPin = true
+                            val lastWrongPin = wrongPins.last()
+
+                            // Format PIN as time (e.g., "1234" -> "12:34", "6142" -> "61:42")
+                            val formattedPin = if (lastWrongPin.length >= 2) {
+                                val hours = lastWrongPin.substring(0, lastWrongPin.length / 2)
+                                val minutes = lastWrongPin.substring(lastWrongPin.length / 2)
+                                "$hours:$minutes"
+                            } else {
+                                lastWrongPin
+                            }
+
+                            timeText.text = formattedPin
+
+                            // Restore actual time after configured duration (if not unlimited)
+                            val displayDuration = prefs.getInt("display_duration", 1000)
+                            if (displayDuration > 0) {
+                                restoreTimeRunnable = Runnable {
+                                    timeText.text = actualTime
+                                    showingWrongPin = false
+                                }
+                                handler.postDelayed(restoreTimeRunnable!!, displayDuration.toLong())
+                            }
+                        }
+                    }, 500) // Long press delay
+                    true
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    // Cancel long press if released too quickly
+                    if (System.currentTimeMillis() - longPressStartTime < 500) {
+                        handler.removeCallbacksAndMessages(null)
+                    }
+
+                    // If unlimited duration mode and showing wrong PIN, restore time on release
+                    val displayDuration = prefs.getInt("display_duration", 1000)
+                    if (displayDuration == -1 && showingWrongPin) {
+                        restoreTimeRunnable?.let { handler.removeCallbacks(it) }
+                        timeText.text = actualTime
+                        showingWrongPin = false
+                    }
+                    true
+                }
+                else -> false
             }
         }
     }
@@ -154,6 +211,65 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setupTimeContainer() {
+        var longPressStartTime = 0L
+
+        timeText.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    longPressStartTime = System.currentTimeMillis()
+
+                    // Schedule showing the wrong PIN after long press delay
+                    handler.postDelayed({
+                        if (wrongPins.isNotEmpty() && !showingWrongPin) {
+                            showingWrongPin = true
+                            val lastWrongPin = wrongPins.last()
+
+                            // Format PIN as time (e.g., "1234" -> "12:34", "6142" -> "61:42")
+                            val formattedPin = if (lastWrongPin.length >= 2) {
+                                val hours = lastWrongPin.substring(0, lastWrongPin.length / 2)
+                                val minutes = lastWrongPin.substring(lastWrongPin.length / 2)
+                                "$hours:$minutes"
+                            } else {
+                                lastWrongPin
+                            }
+
+                            timeText.text = formattedPin
+
+                            // Restore actual time after configured duration (if not unlimited)
+                            val displayDuration = prefs.getInt("display_duration", 1000)
+                            if (displayDuration > 0) {
+                                restoreTimeRunnable = Runnable {
+                                    timeText.text = actualTime
+                                    showingWrongPin = false
+                                }
+                                handler.postDelayed(restoreTimeRunnable!!, displayDuration.toLong())
+                            }
+                        }
+                    }, 500) // Long press delay
+                    true
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    // Cancel long press if released too quickly
+                    if (System.currentTimeMillis() - longPressStartTime < 500) {
+                        handler.removeCallbacksAndMessages(null)
+                    }
+
+                    // If unlimited duration mode and showing wrong PIN, restore time on release
+                    val displayDuration = prefs.getInt("display_duration", 1000)
+                    if (displayDuration == -1 && showingWrongPin) {
+                        restoreTimeRunnable?.let { handler.removeCallbacks(it) }
+                        timeText.text = actualTime
+                        showingWrongPin = false
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
     private fun onNumberPressed(number: String) {
         if (currentPin.length < pinLength) {
             currentPin += number
@@ -171,7 +287,6 @@ class MainActivity : AppCompatActivity() {
             currentPin = currentPin.dropLast(1)
             updatePinDots()
             errorText.visibility = View.GONE
-            resetButtonHighlights()
         }
     }
 
@@ -205,14 +320,10 @@ class MainActivity : AppCompatActivity() {
         // Show error
         errorText.visibility = View.VISIBLE
 
-        // Highlight wrong buttons
-        highlightWrongButtons()
-
         // Clear PIN after a delay
         currentPin = ""
         android.os.Handler(mainLooper).postDelayed({
             updatePinDots()
-            resetButtonHighlights()
         }, 1500)
     }
 
@@ -229,34 +340,44 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showWrongPins() {
-        if (wrongPins.isEmpty()) {
-            wrongPinsText.text = getString(R.string.no_wrong_pins)
-        } else {
-            wrongPinsText.text = "PINes incorrectos:\n" + wrongPins.takeLast(10).joinToString("\n")
-        }
-        wrongPinsText.visibility = View.VISIBLE
-    }
-
     private fun saveWrongPins() {
         prefs.edit().putString("wrong_pins", wrongPins.joinToString(",")).apply()
     }
 
     private fun updateTimeAndDate() {
-        val calendar = Calendar.getInstance()
+        if (!showingWrongPin) {
+            val calendar = Calendar.getInstance()
 
-        // Update time
-        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-        timeText.text = timeFormat.format(calendar.time)
+            // Update time
+            val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+            actualTime = timeFormat.format(calendar.time)
+            timeText.text = actualTime
 
-        // Update date
-        val dateFormat = SimpleDateFormat("EEEE, d 'de' MMMM", Locale("es", "ES"))
-        dateText.text = dateFormat.format(calendar.time)
+            // Update date
+            val dateFormat = SimpleDateFormat("EEEE, d 'de' MMMM", Locale("es", "ES"))
+            dateText.text = dateFormat.format(calendar.time)
+        }
 
         // Update every minute
         android.os.Handler(mainLooper).postDelayed({
             updateTimeAndDate()
         }, 60000)
+    }
+
+    private fun enableImmersiveMode() {
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN)
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            enableImmersiveMode()
+        }
     }
 
     private fun openSettings() {
@@ -265,8 +386,9 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         // Prevent back button from closing the app
-        // Do nothing
+        // Do nothing - intentionally not calling super
     }
 }

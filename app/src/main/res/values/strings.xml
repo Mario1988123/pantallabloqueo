@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Pantalla Bloqueo</string>
+    <string name="app_name">PIN_lock</string>
     <string name="enter_pin">Introduce el PIN</string>
     <string name="wrong_pin">PIN incorrecto</string>
     <string name="pin_cleared">PIN borrado</string>
@@ -23,4 +23,18 @@
     <string name="wrong_pins_title">PINes incorrectos</string>
     <string name="no_wrong_pins">No hay PINes incorrectos</string>
     <string name="clear_wrong_pins">Limpiar historial</string>
+
+    <!-- Display Duration -->
+    <string name="display_duration_title">Duración visualización PIN</string>
+    <string name="duration_half_sec">0.5 segundos</string>
+    <string name="duration_1_sec">1 segundo</string>
+    <string name="duration_2_sec">2 segundos</string>
+    <string name="duration_3_sec">3 segundos</string>
+    <string name="duration_unlimited">Sin límite (hasta soltar)</string>
+
+    <!-- Hand Preference -->
+    <string name="hand_preference_title">Mostrar PIN manteniendo pulsado en:</string>
+    <string name="hand_left">Esquina inferior izquierda (Diestro)</string>
+    <string name="hand_right">Esquina inferior derecha (Zurdo)</string>
+    <string name="hand_clock">Reloj (centro)</string>
 </resources>

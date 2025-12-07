@@ -1,6 +1,5 @@
 package com.mario.pantallabloqueo
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -9,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import java.io.File
 import java.io.FileOutputStream
@@ -23,13 +23,29 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var pin6Digits: RadioButton
     private lateinit var pinInput: EditText
     private lateinit var confirmPinInput: EditText
+    private lateinit var displayDurationGroup: RadioGroup
+    private lateinit var duration05: RadioButton
+    private lateinit var duration1: RadioButton
+    private lateinit var duration2: RadioButton
+    private lateinit var duration3: RadioButton
+    private lateinit var durationUnlimited: RadioButton
     private lateinit var wrongPinsHistory: TextView
     private lateinit var clearWrongPinsButton: Button
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
 
     private var selectedImageUri: Uri? = null
-    private val PICK_IMAGE_REQUEST = 1
+
+    private val imagePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK && result.data != null) {
+            selectedImageUri = result.data?.data
+            selectedImageUri?.let {
+                backgroundPreview.setImageURI(it)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +66,12 @@ class SettingsActivity : AppCompatActivity() {
         pin6Digits = findViewById(R.id.pin6Digits)
         pinInput = findViewById(R.id.pinInput)
         confirmPinInput = findViewById(R.id.confirmPinInput)
+        displayDurationGroup = findViewById(R.id.displayDurationGroup)
+        duration05 = findViewById(R.id.duration05)
+        duration1 = findViewById(R.id.duration1)
+        duration2 = findViewById(R.id.duration2)
+        duration3 = findViewById(R.id.duration3)
+        durationUnlimited = findViewById(R.id.durationUnlimited)
         wrongPinsHistory = findViewById(R.id.wrongPinsHistory)
         clearWrongPinsButton = findViewById(R.id.clearWrongPinsButton)
         saveButton = findViewById(R.id.saveButton)
@@ -67,6 +89,17 @@ class SettingsActivity : AppCompatActivity() {
 
         // Update max length for PIN inputs
         updatePinInputMaxLength()
+
+        // Load display duration
+        val displayDuration = prefs.getInt("display_duration", 1000)
+        when (displayDuration) {
+            500 -> duration05.isChecked = true
+            1000 -> duration1.isChecked = true
+            2000 -> duration2.isChecked = true
+            3000 -> duration3.isChecked = true
+            -1 -> durationUnlimited.isChecked = true
+            else -> duration1.isChecked = true
+        }
 
         // Load background image
         val imagePath = prefs.getString("background_image", null)
@@ -98,7 +131,7 @@ class SettingsActivity : AppCompatActivity() {
             openImagePicker()
         }
 
-        pinLengthGroup.setOnCheckedChangeListener { _, checkedId ->
+        pinLengthGroup.setOnCheckedChangeListener { _, _ ->
             updatePinInputMaxLength()
             pinInput.text.clear()
             confirmPinInput.text.clear()
@@ -125,17 +158,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun openImagePicker() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, PICK_IMAGE_REQUEST)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            selectedImageUri = data.data
-            selectedImageUri?.let {
-                backgroundPreview.setImageURI(it)
-            }
-        }
+        imagePickerLauncher.launch(intent)
     }
 
     private fun clearWrongPins() {
@@ -176,6 +199,17 @@ class SettingsActivity : AppCompatActivity() {
 
         // Save PIN length
         editor.putInt("pin_length", pinLength)
+
+        // Save display duration
+        val displayDuration = when {
+            duration05.isChecked -> 500
+            duration1.isChecked -> 1000
+            duration2.isChecked -> 2000
+            duration3.isChecked -> 3000
+            durationUnlimited.isChecked -> -1
+            else -> 1000
+        }
+        editor.putInt("display_duration", displayDuration)
 
         // Save background image if selected
         selectedImageUri?.let { uri ->
@@ -219,6 +253,7 @@ class SettingsActivity : AppCompatActivity() {
         finish()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         goBackToLockScreen()
     }

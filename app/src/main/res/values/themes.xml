@@ -2,11 +2,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.PantallaBloqueo" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">#888888</item>
+        <item name="colorPrimaryVariant">#666666</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorSecondary">#AAAAAA</item>
+        <item name="colorSecondaryVariant">#888888</item>
         <item name="colorOnSecondary">@color/black</item>
         <item name="android:statusBarColor">@color/black</item>
     </style>
@@ -16,15 +16,30 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
     </style>
 
     <style name="PinButton">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">72dp</item>
-        <item name="android:layout_margin">8dp</item>
+        <item name="android:layout_width">70dp</item>
+        <item name="android:layout_height">70dp</item>
+        <item name="android:layout_margin">12dp</item>
         <item name="android:background">@drawable/button_background</item>
         <item name="android:textColor">@color/button_text</item>
-        <item name="android:textSize">24sp</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">26sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="PinButtonText">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="PinButtonSubtext">
+        <item name="android:textColor">#99FFFFFF</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textStyle">normal</item>
     </style>
 </resources>
