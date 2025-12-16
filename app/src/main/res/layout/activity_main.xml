@@ -47,17 +47,6 @@
             android:text="Viernes, 6 de diciembre"
             android:textColor="@color/white"
             android:textSize="18sp" />
-
-        <!-- Mode indicator (invisible, shown briefly on mode change) -->
-        <TextView
-            android:id="@+id/modeIndicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text=""
-            android:textColor="#88FFFFFF"
-            android:textSize="12sp"
-            android:visibility="gone" />
     </LinearLayout>
 
     <!-- PIN Input Container -->

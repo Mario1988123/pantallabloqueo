@@ -41,7 +41,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var numberPad: GridLayout
     private lateinit var pinInputContainer: LinearLayout
     private lateinit var timeContainer: LinearLayout
-    private lateinit var modeIndicator: TextView
 
     private var currentPin = ""
     private var correctPin = ""
@@ -109,7 +108,6 @@ class MainActivity : AppCompatActivity() {
         numberPad = findViewById(R.id.numberPad)
         pinInputContainer = findViewById(R.id.pinInputContainer)
         timeContainer = findViewById(R.id.timeContainer)
-        modeIndicator = findViewById(R.id.modeIndicator)
     }
 
     private fun loadSettings() {
@@ -175,26 +173,6 @@ class MainActivity : AppCompatActivity() {
 
         // Update UI
         updateUIForCurrentMode()
-
-        // Show mode indicator briefly
-        showModeIndicator()
-    }
-
-    private fun showModeIndicator() {
-        val modeText = when (currentLockType) {
-            LOCK_TYPE_PIN4 -> getString(R.string.mode_pin4)
-            LOCK_TYPE_PIN6 -> getString(R.string.mode_pin6)
-            LOCK_TYPE_PATTERN -> getString(R.string.mode_pattern)
-            else -> ""
-        }
-
-        modeIndicator.text = modeText
-        modeIndicator.visibility = View.VISIBLE
-
-        // Hide after 1 second
-        handler.postDelayed({
-            modeIndicator.visibility = View.GONE
-        }, 1000)
     }
 
     private fun updateUIForCurrentMode() {

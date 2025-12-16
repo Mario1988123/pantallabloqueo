@@ -32,9 +32,4 @@
     <string name="wrong_pins_title">Códigos incorrectos</string>
     <string name="no_wrong_pins">No hay códigos incorrectos</string>
     <string name="clear_wrong_pins">Limpiar historial</string>
-
-    <!-- Mode indicators -->
-    <string name="mode_pin4">PIN 4</string>
-    <string name="mode_pin6">PIN 6</string>
-    <string name="mode_pattern">Patrón</string>
 </resources>
