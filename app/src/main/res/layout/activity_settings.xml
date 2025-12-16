@@ -46,79 +46,150 @@
             android:scaleType="centerCrop"
             android:contentDescription="Vista previa del fondo" />
 
-        <!-- PIN Length Selection -->
+        <!-- Lock Type Selection -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/pin_length"
+            android:text="@string/lock_type"
             android:textColor="@color/white"
             android:textSize="16sp"
             android:layout_marginBottom="8dp" />
 
         <RadioGroup
-            android:id="@+id/pinLengthGroup"
+            android:id="@+id/lockTypeGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_marginBottom="24dp">
 
             <RadioButton
                 android:id="@+id/pin4Digits"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="@string/pin_4_digits"
                 android:textColor="@color/white"
                 android:checked="true" />
 
             <RadioButton
                 android:id="@+id/pin6Digits"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="@string/pin_6_digits"
+                android:textColor="@color/white" />
+
+            <RadioButton
+                android:id="@+id/patternLock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pattern_lock"
                 android:textColor="@color/white" />
         </RadioGroup>
 
-        <!-- Set PIN -->
-        <TextView
+        <!-- PIN Configuration (shown when PIN is selected) -->
+        <LinearLayout
+            android:id="@+id/pinConfigContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/set_pin"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp" />
+            android:orientation="vertical"
+            android:visibility="visible">
 
-        <EditText
-            android:id="@+id/pinInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/set_pin"
-            android:inputType="numberPassword"
-            android:maxLength="6"
-            android:textColor="@color/white"
-            android:textColorHint="#88FFFFFF"
-            android:layout_marginBottom="16dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/set_pin"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:layout_marginBottom="8dp" />
 
-        <!-- Confirm PIN -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/confirm_pin"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp" />
+            <EditText
+                android:id="@+id/pinInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/set_pin"
+                android:inputType="numberPassword"
+                android:maxLength="6"
+                android:textColor="@color/white"
+                android:textColorHint="#88FFFFFF"
+                android:layout_marginBottom="16dp" />
 
-        <EditText
-            android:id="@+id/confirmPinInput"
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/confirm_pin"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/confirmPinInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/confirm_pin"
+                android:inputType="numberPassword"
+                android:maxLength="6"
+                android:textColor="@color/white"
+                android:textColorHint="#88FFFFFF"
+                android:layout_marginBottom="24dp" />
+        </LinearLayout>
+
+        <!-- Pattern Configuration (shown when Pattern is selected) -->
+        <LinearLayout
+            android:id="@+id/patternConfigContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/confirm_pin"
-            android:inputType="numberPassword"
-            android:maxLength="6"
-            android:textColor="@color/white"
-            android:textColorHint="#88FFFFFF"
-            android:layout_marginBottom="24dp" />
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/patternInstructions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/draw_pattern"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:layout_marginBottom="16dp" />
+
+            <com.mario.pantallabloqueo.PatternView
+                android:id="@+id/patternInput"
+                android:layout_width="240dp"
+                android:layout_height="240dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="8dp" />
+
+            <Button
+                android:id="@+id/clearPatternButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/clear_pattern"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:id="@+id/confirmPatternInstructions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/confirm_pattern"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:layout_marginBottom="16dp" />
+
+            <com.mario.pantallabloqueo.PatternView
+                android:id="@+id/confirmPatternInput"
+                android:layout_width="240dp"
+                android:layout_height="240dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="8dp" />
+
+            <Button
+                android:id="@+id/clearConfirmPatternButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/clear_pattern"
+                android:layout_marginBottom="24dp" />
+        </LinearLayout>
 
         <!-- Wrong PINs History -->
         <TextView
