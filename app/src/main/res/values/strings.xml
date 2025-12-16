@@ -3,24 +3,38 @@
     <string name="app_name">Pantalla Bloqueo</string>
     <string name="enter_pin">Introduce el PIN</string>
     <string name="wrong_pin">PIN incorrecto</string>
+    <string name="wrong_pattern">Patrón incorrecto</string>
     <string name="pin_cleared">PIN borrado</string>
 
     <!-- Settings -->
     <string name="settings_title">Configuración</string>
+    <string name="lock_type">Tipo de bloqueo</string>
     <string name="pin_length">Longitud del PIN</string>
-    <string name="pin_4_digits">4 dígitos</string>
-    <string name="pin_6_digits">6 dígitos</string>
+    <string name="pin_4_digits">PIN 4 dígitos</string>
+    <string name="pin_6_digits">PIN 6 dígitos</string>
+    <string name="pattern_lock">Patrón</string>
     <string name="set_pin">Configurar PIN</string>
+    <string name="set_pattern">Configurar patrón</string>
     <string name="confirm_pin">Confirmar PIN</string>
+    <string name="confirm_pattern">Confirmar patrón</string>
+    <string name="draw_pattern">Dibuja el patrón</string>
     <string name="change_background">Cambiar fondo</string>
     <string name="save">Guardar</string>
     <string name="cancel">Cancelar</string>
-    <string name="pin_saved">PIN guardado correctamente</string>
+    <string name="pin_saved">Configuración guardada</string>
     <string name="pins_dont_match">Los PINes no coinciden</string>
+    <string name="patterns_dont_match">Los patrones no coinciden</string>
+    <string name="pattern_too_short">El patrón debe tener al menos 4 puntos</string>
     <string name="select_image">Seleccionar imagen</string>
+    <string name="clear_pattern">Limpiar</string>
 
     <!-- Wrong PINs -->
-    <string name="wrong_pins_title">PINes incorrectos</string>
-    <string name="no_wrong_pins">No hay PINes incorrectos</string>
+    <string name="wrong_pins_title">Códigos incorrectos</string>
+    <string name="no_wrong_pins">No hay códigos incorrectos</string>
     <string name="clear_wrong_pins">Limpiar historial</string>
+
+    <!-- Mode indicators -->
+    <string name="mode_pin4">PIN 4</string>
+    <string name="mode_pin6">PIN 6</string>
+    <string name="mode_pattern">Patrón</string>
 </resources>

@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import java.io.File
@@ -18,11 +19,18 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var prefs: SharedPreferences
     private lateinit var selectBackgroundButton: Button
     private lateinit var backgroundPreview: ImageView
-    private lateinit var pinLengthGroup: RadioGroup
+    private lateinit var lockTypeGroup: RadioGroup
     private lateinit var pin4Digits: RadioButton
     private lateinit var pin6Digits: RadioButton
+    private lateinit var patternLock: RadioButton
+    private lateinit var pinConfigContainer: LinearLayout
+    private lateinit var patternConfigContainer: LinearLayout
     private lateinit var pinInput: EditText
     private lateinit var confirmPinInput: EditText
+    private lateinit var patternInput: PatternView
+    private lateinit var confirmPatternInput: PatternView
+    private lateinit var clearPatternButton: Button
+    private lateinit var clearConfirmPatternButton: Button
     private lateinit var wrongPinsHistory: TextView
     private lateinit var clearWrongPinsButton: Button
     private lateinit var saveButton: Button
@@ -30,6 +38,9 @@ class SettingsActivity : AppCompatActivity() {
 
     private var selectedImageUri: Uri? = null
     private val PICK_IMAGE_REQUEST = 1
+
+    private var currentPattern = ""
+    private var confirmPattern = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,11 +56,18 @@ class SettingsActivity : AppCompatActivity() {
     private fun initializeViews() {
         selectBackgroundButton = findViewById(R.id.selectBackgroundButton)
         backgroundPreview = findViewById(R.id.backgroundPreview)
-        pinLengthGroup = findViewById(R.id.pinLengthGroup)
+        lockTypeGroup = findViewById(R.id.lockTypeGroup)
         pin4Digits = findViewById(R.id.pin4Digits)
         pin6Digits = findViewById(R.id.pin6Digits)
+        patternLock = findViewById(R.id.patternLock)
+        pinConfigContainer = findViewById(R.id.pinConfigContainer)
+        patternConfigContainer = findViewById(R.id.patternConfigContainer)
         pinInput = findViewById(R.id.pinInput)
         confirmPinInput = findViewById(R.id.confirmPinInput)
+        patternInput = findViewById(R.id.patternInput)
+        confirmPatternInput = findViewById(R.id.confirmPatternInput)
+        clearPatternButton = findViewById(R.id.clearPatternButton)
+        clearConfirmPatternButton = findViewById(R.id.clearConfirmPatternButton)
         wrongPinsHistory = findViewById(R.id.wrongPinsHistory)
         clearWrongPinsButton = findViewById(R.id.clearWrongPinsButton)
         saveButton = findViewById(R.id.saveButton)
@@ -57,13 +75,16 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun loadCurrentSettings() {
-        // Load PIN length
-        val currentPinLength = prefs.getInt("pin_length", 4)
-        if (currentPinLength == 4) {
-            pin4Digits.isChecked = true
-        } else {
-            pin6Digits.isChecked = true
+        // Load lock type
+        val currentLockType = prefs.getString("lock_type", MainActivity.LOCK_TYPE_PIN4)
+        when (currentLockType) {
+            MainActivity.LOCK_TYPE_PIN4 -> pin4Digits.isChecked = true
+            MainActivity.LOCK_TYPE_PIN6 -> pin6Digits.isChecked = true
+            MainActivity.LOCK_TYPE_PATTERN -> patternLock.isChecked = true
         }
+
+        // Update UI visibility
+        updateConfigVisibility()
 
         // Update max length for PIN inputs
         updatePinInputMaxLength()
@@ -98,10 +119,34 @@ class SettingsActivity : AppCompatActivity() {
             openImagePicker()
         }
 
-        pinLengthGroup.setOnCheckedChangeListener { _, checkedId ->
+        lockTypeGroup.setOnCheckedChangeListener { _, _ ->
+            updateConfigVisibility()
             updatePinInputMaxLength()
             pinInput.text.clear()
             confirmPinInput.text.clear()
+            currentPattern = ""
+            confirmPattern = ""
+            patternInput.clearPattern()
+            confirmPatternInput.clearPattern()
+        }
+
+        // Pattern inputs
+        patternInput.onPatternCompleted = { pattern ->
+            currentPattern = pattern
+        }
+
+        confirmPatternInput.onPatternCompleted = { pattern ->
+            confirmPattern = pattern
+        }
+
+        clearPatternButton.setOnClickListener {
+            currentPattern = ""
+            patternInput.clearPattern()
+        }
+
+        clearConfirmPatternButton.setOnClickListener {
+            confirmPattern = ""
+            confirmPatternInput.clearPattern()
         }
 
         clearWrongPinsButton.setOnClickListener {
@@ -114,6 +159,16 @@ class SettingsActivity : AppCompatActivity() {
 
         cancelButton.setOnClickListener {
             goBackToLockScreen()
+        }
+    }
+
+    private fun updateConfigVisibility() {
+        if (patternLock.isChecked) {
+            pinConfigContainer.visibility = View.GONE
+            patternConfigContainer.visibility = View.VISIBLE
+        } else {
+            pinConfigContainer.visibility = View.VISIBLE
+            patternConfigContainer.visibility = View.GONE
         }
     }
 
@@ -145,37 +200,66 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun saveSettings() {
-        val pin = pinInput.text.toString()
-        val confirmPin = confirmPinInput.text.toString()
-        val pinLength = if (pin4Digits.isChecked) 4 else 6
+        val lockType = when {
+            pin4Digits.isChecked -> MainActivity.LOCK_TYPE_PIN4
+            pin6Digits.isChecked -> MainActivity.LOCK_TYPE_PIN6
+            patternLock.isChecked -> MainActivity.LOCK_TYPE_PATTERN
+            else -> MainActivity.LOCK_TYPE_PIN4
+        }
 
-        // Validate PIN
-        if (pin.isNotEmpty()) {
-            if (pin.length != pinLength) {
-                Toast.makeText(
-                    this,
-                    "El PIN debe tener $pinLength dígitos",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return
+        // Validate based on lock type
+        if (lockType == MainActivity.LOCK_TYPE_PATTERN) {
+            // Validate pattern
+            if (currentPattern.isNotEmpty() || confirmPattern.isNotEmpty()) {
+                if (currentPattern.length < 4) {
+                    Toast.makeText(this, getString(R.string.pattern_too_short), Toast.LENGTH_SHORT).show()
+                    return
+                }
+                if (currentPattern != confirmPattern) {
+                    Toast.makeText(this, getString(R.string.patterns_dont_match), Toast.LENGTH_SHORT).show()
+                    return
+                }
             }
+        } else {
+            // Validate PIN
+            val pin = pinInput.text.toString()
+            val confirmPin = confirmPinInput.text.toString()
+            val pinLength = if (pin4Digits.isChecked) 4 else 6
 
-            if (pin != confirmPin) {
-                Toast.makeText(this, getString(R.string.pins_dont_match), Toast.LENGTH_SHORT).show()
-                return
+            if (pin.isNotEmpty()) {
+                if (pin.length != pinLength) {
+                    Toast.makeText(
+                        this,
+                        "El PIN debe tener $pinLength dígitos",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return
+                }
+
+                if (pin != confirmPin) {
+                    Toast.makeText(this, getString(R.string.pins_dont_match), Toast.LENGTH_SHORT).show()
+                    return
+                }
             }
         }
 
         // Save settings
         val editor = prefs.edit()
 
-        // Save PIN if provided
-        if (pin.isNotEmpty()) {
-            editor.putString("correct_pin", pin)
-        }
+        // Save lock type
+        editor.putString("lock_type", lockType)
 
-        // Save PIN length
-        editor.putInt("pin_length", pinLength)
+        // Save PIN or Pattern based on type
+        if (lockType == MainActivity.LOCK_TYPE_PATTERN) {
+            if (currentPattern.isNotEmpty()) {
+                editor.putString("correct_pattern", currentPattern)
+            }
+        } else {
+            val pin = pinInput.text.toString()
+            if (pin.isNotEmpty()) {
+                editor.putString("correct_pin", pin)
+            }
+        }
 
         // Save background image if selected
         selectedImageUri?.let { uri ->
@@ -219,6 +303,7 @@ class SettingsActivity : AppCompatActivity() {
         finish()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         goBackToLockScreen()
     }

@@ -20,7 +20,7 @@
         android:layout_height="match_parent"
         android:background="#AA000000" />
 
-    <!-- Time and Date (decorative) -->
+    <!-- Time and Date (decorative) - LONG PRESS TO CHANGE MODE -->
     <LinearLayout
         android:id="@+id/timeContainer"
         android:layout_width="match_parent"
@@ -47,10 +47,22 @@
             android:text="Viernes, 6 de diciembre"
             android:textColor="@color/white"
             android:textSize="18sp" />
+
+        <!-- Mode indicator (invisible, shown briefly on mode change) -->
+        <TextView
+            android:id="@+id/modeIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text=""
+            android:textColor="#88FFFFFF"
+            android:textSize="12sp"
+            android:visibility="gone" />
     </LinearLayout>
 
     <!-- PIN Input Container -->
     <LinearLayout
+        android:id="@+id/pinInputContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -122,6 +134,27 @@
             android:textSize="14sp"
             android:visibility="gone" />
     </LinearLayout>
+
+    <!-- Pattern View (for pattern lock mode) -->
+    <com.mario.pantallabloqueo.PatternView
+        android:id="@+id/patternView"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+
+    <!-- Pattern Error Message -->
+    <TextView
+        android:id="@+id/patternErrorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/patternView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:text="@string/wrong_pattern"
+        android:textColor="@color/error_color"
+        android:textSize="14sp"
+        android:visibility="gone" />
 
     <!-- Number Pad -->
     <GridLayout

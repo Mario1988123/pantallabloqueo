@@ -5,9 +5,13 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.Button
+import android.widget.GridLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import java.text.SimpleDateFormat
@@ -15,24 +19,40 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
+    companion object {
+        const val LOCK_TYPE_PIN4 = "pin4"
+        const val LOCK_TYPE_PIN6 = "pin6"
+        const val LOCK_TYPE_PATTERN = "pattern"
+    }
+
     private lateinit var prefs: SharedPreferences
     private lateinit var pinDots: List<View>
     private lateinit var numberButtons: List<Button>
     private lateinit var btnDelete: Button
     private lateinit var errorText: TextView
+    private lateinit var patternErrorText: TextView
     private lateinit var timeText: TextView
     private lateinit var dateText: TextView
     private lateinit var backgroundImage: ImageView
     private lateinit var secretArea: View
     private lateinit var wrongPinsText: TextView
     private lateinit var settingsSecretButton: View
+    private lateinit var patternView: PatternView
+    private lateinit var numberPad: GridLayout
+    private lateinit var pinInputContainer: LinearLayout
+    private lateinit var timeContainer: LinearLayout
+    private lateinit var modeIndicator: TextView
 
     private var currentPin = ""
     private var correctPin = ""
+    private var correctPattern = ""
+    private var currentLockType = LOCK_TYPE_PIN4
     private var pinLength = 4
     private val wrongPins = mutableListOf<String>()
     private var settingsTapCount = 0
     private var lastTapTime = 0L
+
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +65,10 @@ class MainActivity : AppCompatActivity() {
         setupNumberPad()
         setupSecretArea()
         setupSettingsButton()
+        setupQuickModeSwitch()
+        setupPatternView()
         updateTimeAndDate()
+        updateUIForCurrentMode()
     }
 
     private fun initializeViews() {
@@ -75,17 +98,30 @@ class MainActivity : AppCompatActivity() {
 
         btnDelete = findViewById(R.id.btnDelete)
         errorText = findViewById(R.id.errorText)
+        patternErrorText = findViewById(R.id.patternErrorText)
         timeText = findViewById(R.id.timeText)
         dateText = findViewById(R.id.dateText)
         backgroundImage = findViewById(R.id.backgroundImage)
         secretArea = findViewById(R.id.secretArea)
         wrongPinsText = findViewById(R.id.wrongPinsText)
         settingsSecretButton = findViewById(R.id.settingsSecretButton)
+        patternView = findViewById(R.id.patternView)
+        numberPad = findViewById(R.id.numberPad)
+        pinInputContainer = findViewById(R.id.pinInputContainer)
+        timeContainer = findViewById(R.id.timeContainer)
+        modeIndicator = findViewById(R.id.modeIndicator)
     }
 
     private fun loadSettings() {
         correctPin = prefs.getString("correct_pin", "1234") ?: "1234"
-        pinLength = prefs.getInt("pin_length", 4)
+        correctPattern = prefs.getString("correct_pattern", "") ?: ""
+        currentLockType = prefs.getString("lock_type", LOCK_TYPE_PIN4) ?: LOCK_TYPE_PIN4
+
+        pinLength = when (currentLockType) {
+            LOCK_TYPE_PIN4 -> 4
+            LOCK_TYPE_PIN6 -> 6
+            else -> 4
+        }
 
         // Load background image if exists
         val imagePath = prefs.getString("background_image", null)
@@ -104,9 +140,84 @@ class MainActivity : AppCompatActivity() {
             wrongPins.clear()
             wrongPins.addAll(wrongPinsString.split(",").filter { it.isNotEmpty() })
         }
+    }
 
-        // Update PIN dots visibility
-        updatePinDotsVisibility()
+    private fun setupQuickModeSwitch() {
+        // LONG PRESS on time/date area to quickly switch modes
+        timeContainer.setOnLongClickListener {
+            switchToNextMode()
+            true
+        }
+    }
+
+    private fun switchToNextMode() {
+        // Ciclo: PIN4 -> PIN6 -> Patrón -> PIN4
+        val newLockType = when (currentLockType) {
+            LOCK_TYPE_PIN4 -> LOCK_TYPE_PIN6
+            LOCK_TYPE_PIN6 -> LOCK_TYPE_PATTERN
+            LOCK_TYPE_PATTERN -> LOCK_TYPE_PIN4
+            else -> LOCK_TYPE_PIN4
+        }
+
+        currentLockType = newLockType
+        pinLength = when (currentLockType) {
+            LOCK_TYPE_PIN4 -> 4
+            LOCK_TYPE_PIN6 -> 6
+            else -> 4
+        }
+
+        // Save the new mode
+        prefs.edit().putString("lock_type", currentLockType).apply()
+
+        // Reset current input
+        currentPin = ""
+        patternView.clearPattern()
+
+        // Update UI
+        updateUIForCurrentMode()
+
+        // Show mode indicator briefly
+        showModeIndicator()
+    }
+
+    private fun showModeIndicator() {
+        val modeText = when (currentLockType) {
+            LOCK_TYPE_PIN4 -> getString(R.string.mode_pin4)
+            LOCK_TYPE_PIN6 -> getString(R.string.mode_pin6)
+            LOCK_TYPE_PATTERN -> getString(R.string.mode_pattern)
+            else -> ""
+        }
+
+        modeIndicator.text = modeText
+        modeIndicator.visibility = View.VISIBLE
+
+        // Hide after 1 second
+        handler.postDelayed({
+            modeIndicator.visibility = View.GONE
+        }, 1000)
+    }
+
+    private fun updateUIForCurrentMode() {
+        when (currentLockType) {
+            LOCK_TYPE_PIN4, LOCK_TYPE_PIN6 -> {
+                // Show PIN mode
+                pinInputContainer.visibility = View.VISIBLE
+                numberPad.visibility = View.VISIBLE
+                patternView.visibility = View.GONE
+                patternErrorText.visibility = View.GONE
+
+                // Update dots visibility
+                updatePinDotsVisibility()
+                updatePinDots()
+            }
+            LOCK_TYPE_PATTERN -> {
+                // Show pattern mode
+                pinInputContainer.visibility = View.GONE
+                numberPad.visibility = View.GONE
+                patternView.visibility = View.VISIBLE
+                errorText.visibility = View.GONE
+            }
+        }
     }
 
     private fun updatePinDotsVisibility() {
@@ -124,6 +235,12 @@ class MainActivity : AppCompatActivity() {
 
         btnDelete.setOnClickListener {
             onDeletePressed()
+        }
+    }
+
+    private fun setupPatternView() {
+        patternView.onPatternCompleted = { pattern ->
+            checkPattern(pattern)
         }
     }
 
@@ -197,6 +314,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkPattern(pattern: String) {
+        if (pattern == correctPattern) {
+            // Patrón correcto
+            finishAffinity()
+        } else {
+            // Patrón incorrecto
+            onWrongPattern()
+        }
+    }
+
     private fun onWrongPin() {
         // Add to wrong PINs list
         wrongPins.add(currentPin)
@@ -209,10 +336,29 @@ class MainActivity : AppCompatActivity() {
         highlightWrongButtons()
 
         // Clear PIN after a delay
+        val wrongPin = currentPin
         currentPin = ""
-        android.os.Handler(mainLooper).postDelayed({
+        handler.postDelayed({
             updatePinDots()
             resetButtonHighlights()
+        }, 1500)
+    }
+
+    private fun onWrongPattern() {
+        // Add to wrong patterns list
+        val patternStr = patternView.getSelectedPattern()
+        if (patternStr.isNotEmpty()) {
+            wrongPins.add("P:$patternStr")
+            saveWrongPins()
+        }
+
+        // Show error
+        patternErrorText.visibility = View.VISIBLE
+        patternView.showWrongPattern()
+
+        // Hide error after delay
+        handler.postDelayed({
+            patternErrorText.visibility = View.GONE
         }, 1500)
     }
 
@@ -233,7 +379,7 @@ class MainActivity : AppCompatActivity() {
         if (wrongPins.isEmpty()) {
             wrongPinsText.text = getString(R.string.no_wrong_pins)
         } else {
-            wrongPinsText.text = "PINes incorrectos:\n" + wrongPins.takeLast(10).joinToString("\n")
+            wrongPinsText.text = "Códigos incorrectos:\n" + wrongPins.takeLast(10).joinToString("\n")
         }
         wrongPinsText.visibility = View.VISIBLE
     }
@@ -254,7 +400,7 @@ class MainActivity : AppCompatActivity() {
         dateText.text = dateFormat.format(calendar.time)
 
         // Update every minute
-        android.os.Handler(mainLooper).postDelayed({
+        handler.postDelayed({
             updateTimeAndDate()
         }, 60000)
     }
@@ -265,6 +411,7 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         // Prevent back button from closing the app
         // Do nothing
