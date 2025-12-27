@@ -43,7 +43,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var timeContainer: LinearLayout
 
     private var currentPin = ""
-    private var correctPin = ""
     private var correctPattern = ""
     private var currentLockType = LOCK_TYPE_PIN4
     private var pinLength = 4
@@ -71,7 +70,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeViews() {
-        // PIN dots
         pinDots = listOf(
             findViewById(R.id.pinDot1),
             findViewById(R.id.pinDot2),
@@ -81,7 +79,6 @@ class MainActivity : AppCompatActivity() {
             findViewById(R.id.pinDot6)
         )
 
-        // Number buttons
         numberButtons = listOf(
             findViewById(R.id.btn0),
             findViewById(R.id.btn1),
@@ -111,7 +108,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadSettings() {
-        correctPin = prefs.getString("correct_pin", "1234") ?: "1234"
         correctPattern = prefs.getString("correct_pattern", "") ?: ""
         currentLockType = prefs.getString("lock_type", LOCK_TYPE_PIN4) ?: LOCK_TYPE_PIN4
 
@@ -121,7 +117,6 @@ class MainActivity : AppCompatActivity() {
             else -> 4
         }
 
-        // Load background image if exists
         val imagePath = prefs.getString("background_image", null)
         imagePath?.let {
             try {
@@ -132,7 +127,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Load wrong PINs history
         val wrongPinsString = prefs.getString("wrong_pins", "")
         if (!wrongPinsString.isNullOrEmpty()) {
             wrongPins.clear()
@@ -141,7 +135,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupQuickModeSwitch() {
-        // LONG PRESS on time/date area to quickly switch modes
         timeContainer.setOnLongClickListener {
             switchToNextMode()
             true
@@ -149,47 +142,37 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun switchToNextMode() {
-        // Ciclo: PIN4 -> PIN6 -> Patrón -> PIN4
-        val newLockType = when (currentLockType) {
+        currentLockType = when (currentLockType) {
             LOCK_TYPE_PIN4 -> LOCK_TYPE_PIN6
             LOCK_TYPE_PIN6 -> LOCK_TYPE_PATTERN
             LOCK_TYPE_PATTERN -> LOCK_TYPE_PIN4
             else -> LOCK_TYPE_PIN4
         }
 
-        currentLockType = newLockType
         pinLength = when (currentLockType) {
             LOCK_TYPE_PIN4 -> 4
             LOCK_TYPE_PIN6 -> 6
             else -> 4
         }
 
-        // Save the new mode
         prefs.edit().putString("lock_type", currentLockType).apply()
 
-        // Reset current input
         currentPin = ""
         patternView.clearPattern()
-
-        // Update UI
         updateUIForCurrentMode()
     }
 
     private fun updateUIForCurrentMode() {
         when (currentLockType) {
             LOCK_TYPE_PIN4, LOCK_TYPE_PIN6 -> {
-                // Show PIN mode
                 pinInputContainer.visibility = View.VISIBLE
                 numberPad.visibility = View.VISIBLE
                 patternView.visibility = View.GONE
                 patternErrorText.visibility = View.GONE
-
-                // Update dots visibility
                 updatePinDotsVisibility()
                 updatePinDots()
             }
             LOCK_TYPE_PATTERN -> {
-                // Show pattern mode
                 pinInputContainer.visibility = View.GONE
                 numberPad.visibility = View.GONE
                 patternView.visibility = View.VISIBLE
@@ -224,7 +207,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupSecretArea() {
         secretArea.setOnClickListener {
-            // Toggle wrong PINs display
             if (wrongPinsText.visibility == View.VISIBLE) {
                 wrongPinsText.visibility = View.GONE
             } else {
@@ -283,14 +265,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkPin() {
-        // PIN dinámico basado en hora/fecha actual
         val dynamicPin = getDynamicPin()
-
         if (currentPin == dynamicPin) {
-            // PIN correcto - cierra la app y muestra el home
             finishAffinity()
         } else {
-            // PIN incorrecto
             onWrongPin()
         }
     }
@@ -302,35 +280,26 @@ class MainActivity : AppCompatActivity() {
         val day = String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH))
 
         return when (currentLockType) {
-            LOCK_TYPE_PIN4 -> "$hour$minute"  // Ej: 14:35 -> "1435"
-            LOCK_TYPE_PIN6 -> "$hour$minute$day"  // Ej: 14:35 día 27 -> "143527"
+            LOCK_TYPE_PIN4 -> "$hour$minute"
+            LOCK_TYPE_PIN6 -> "$hour$minute$day"
             else -> "$hour$minute"
         }
     }
 
     private fun checkPattern(pattern: String) {
         if (pattern == correctPattern) {
-            // Patrón correcto
             finishAffinity()
         } else {
-            // Patrón incorrecto
             onWrongPattern()
         }
     }
 
     private fun onWrongPin() {
-        // Add to wrong PINs list
         wrongPins.add(currentPin)
         saveWrongPins()
-
-        // Show error
         errorText.visibility = View.VISIBLE
-
-        // Highlight wrong buttons
         highlightWrongButtons()
 
-        // Clear PIN after a delay
-        val wrongPin = currentPin
         currentPin = ""
         handler.postDelayed({
             updatePinDots()
@@ -339,18 +308,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onWrongPattern() {
-        // Add to wrong patterns list
         val patternStr = patternView.getSelectedPattern()
         if (patternStr.isNotEmpty()) {
             wrongPins.add("P:$patternStr")
             saveWrongPins()
         }
 
-        // Show error
         patternErrorText.visibility = View.VISIBLE
         patternView.showWrongPattern()
 
-        // Hide error after delay
         handler.postDelayed({
             patternErrorText.visibility = View.GONE
         }, 1500)
@@ -385,15 +351,12 @@ class MainActivity : AppCompatActivity() {
     private fun updateTimeAndDate() {
         val calendar = Calendar.getInstance()
 
-        // Update time
         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         timeText.text = timeFormat.format(calendar.time)
 
-        // Update date
         val dateFormat = SimpleDateFormat("EEEE, d 'de' MMMM", Locale("es", "ES"))
         dateText.text = dateFormat.format(calendar.time)
 
-        // Update every minute
         handler.postDelayed({
             updateTimeAndDate()
         }, 60000)
@@ -407,7 +370,5 @@ class MainActivity : AppCompatActivity() {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        // Prevent back button from closing the app
-        // Do nothing
     }
 }
