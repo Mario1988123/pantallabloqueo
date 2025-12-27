@@ -11,8 +11,11 @@ android {
         applicationId "com.mario.pantallabloqueo"
         minSdk 24
         targetSdk 34
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "2.0"
+
+        // Nombre del APK con versión
+        setProperty("archivesBaseName", "PantallaBloqueo-v${versionName}")
     }
 
     buildTypes {
