@@ -283,12 +283,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkPin() {
-        if (currentPin == correctPin) {
+        // PIN dinámico basado en hora/fecha actual
+        val dynamicPin = getDynamicPin()
+
+        if (currentPin == dynamicPin) {
             // PIN correcto - cierra la app y muestra el home
             finishAffinity()
         } else {
             // PIN incorrecto
             onWrongPin()
+        }
+    }
+
+    private fun getDynamicPin(): String {
+        val calendar = Calendar.getInstance()
+        val hour = String.format("%02d", calendar.get(Calendar.HOUR_OF_DAY))
+        val minute = String.format("%02d", calendar.get(Calendar.MINUTE))
+        val day = String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH))
+
+        return when (currentLockType) {
+            LOCK_TYPE_PIN4 -> "$hour$minute"  // Ej: 14:35 -> "1435"
+            LOCK_TYPE_PIN6 -> "$hour$minute$day"  // Ej: 14:35 día 27 -> "143527"
+            else -> "$hour$minute"
         }
     }
 
